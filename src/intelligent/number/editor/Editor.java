@@ -340,10 +340,10 @@ public class Editor {
             return true;
         }
 
-        boolean placeNumberAtSuitablePlace = Main.askForUsersPermission("""
-                Would you like to place the number at the suitable position?
-                Press Y- to place\t N- Discard number.
-                Please enter your choice:\t""");
+        boolean placeNumberAtSuitablePlace = Main.askForUsersPermission(
+                " Would you like to place the number at the suitable position?" +
+                        "\nPress Y- to place\t N- Discard number." +
+                        " \n Please enter your choice:\t");
 
         if (!placeNumberAtSuitablePlace) {
             System.out.println("Number discarded successfully!");

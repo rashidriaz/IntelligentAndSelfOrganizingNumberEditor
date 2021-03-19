@@ -109,8 +109,12 @@ public class Main {
         }
         char option = printInsertionMenuAndGetSelectedOption();
         switch (option) {
-            case '1' -> insert();
-            case '2' -> insertAtPosition();
+            case '1':
+                insert();
+                break;
+            case '2' :
+                insertAtPosition();
+                break;
         }
     }
 
