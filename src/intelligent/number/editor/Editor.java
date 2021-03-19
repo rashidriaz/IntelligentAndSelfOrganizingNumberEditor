@@ -88,6 +88,38 @@ public class Editor {
     }
 
     /*
+    --------------------------------------------------------------------------------------------------------
+    The functionality of the method is to find and replace the given number with the new number in the array
+    --------------------------------------------------------------------------------------------------------
+     */
+    public boolean findAndReplace(int oldNumber, int newNumber, boolean replaceAll) {
+        int index = findNumber(oldNumber);
+        if (index < 0) {//number not found
+            return false;
+        }
+        if (index >= 0) {
+            if (!Main.askForUsersPermission("Are you sure you want to replace " + oldNumber + " with " + newNumber + "? (Y-yes, N-no):\t")) {
+                return false;
+            }
+        }
+        if (isSorted()) {
+            if (Main.askForUsersPermission("Replacing the number might affect the order. Would you still like to proceed? (Y-yes, N-no):\t")) {
+                int oldCounter = counter;
+                delete(oldNumber, replaceAll, true);
+                while (counter != oldCounter) {
+                    insertAtSuitablePosition(newNumber);
+                }
+                return true;
+            }
+        }
+        while (index >= 0) {
+            array[index] = newNumber;
+            index = findNumber(oldNumber);
+        }
+        return true;
+    }
+
+    /*
     ---------------------------------------------------------------------------------------
     the functionality of this method is to delete a number from the array. this method
     -first checks whether the array is sorted or not and based on that, decides that from
@@ -95,11 +127,11 @@ public class Editor {
     -method returns true if it finds and deletes the given number else it returns false
     ---------------------------------------------------------------------------------------
      */
-    public boolean delete(int number, boolean deleteAll) {
+    public boolean delete(int number, boolean deleteAll, boolean internalCall) {
         if (!isSorted()) {
-            return deleteFromUnSortedArray(number, deleteAll);
+            return deleteFromUnSortedArray(number, deleteAll, internalCall);
         }
-        return deleteFromSortedArray(number, deleteAll);
+        return deleteFromSortedArray(number, deleteAll, internalCall);
     }
 
     /*
@@ -121,6 +153,9 @@ public class Editor {
             //if this condition returns true, it means the user have asked to delete every number from the startIndex till the end of the array
             counter = start;
             return true;
+        }
+        if (!Main.askForUsersPermission("Are you sure you want to delete the numbers? (Y- yes, N-no):\t")) {
+            return false;
         }
         moveElementsToTheLeft(start, end);
         return true;
@@ -254,7 +289,7 @@ public class Editor {
         // or the program should keep the array sorted
         if (isSorted()) {
             disturbTheOrder = Main.askForUsersPermission("Inserting this number might affect the order.\n" +
-                    " Would you still like to proceed? (y-yes, N- No)");
+                    " Would you still like to proceed and disturb the order? (y-yes, N- No)");
             if (!disturbTheOrder) {
                 insertAtSuitablePosition(number);
                 return;
@@ -278,7 +313,7 @@ public class Editor {
     private boolean insertNumberAtPositionInSortedArrayIfOrderIsGettingDisturbed(int number, int position) {
         boolean disturbTheOrder = Main.askForUsersPermission("Inserting this number might affect " +
                 "the order.\n" +
-                " Would you still like to proceed? (y-yes, N- No)");
+                " Would you still like to proceed and disturb the order? (y-yes, N- No)");
         if (disturbTheOrder) {
             insertInUnSortedArrayAtPosition(number, position);
             return true;
@@ -359,10 +394,15 @@ public class Editor {
     -occurrences of the number
     ---------------------------------------------------------------------------------------
      */
-    private boolean deleteFromUnSortedArray(int number, boolean deleteAllOccurrences) {
+    private boolean deleteFromUnSortedArray(int number, boolean deleteAllOccurrences, boolean internalCall) {
         int totalNumbersBeforeDeletion = counter; // The purpose of this variable is to check whether the number is deleted or not at the end of the method
         for (int i = 0; i < totalNumbersBeforeDeletion; i++) {
             if (array[i] == number) {
+                if (!internalCall) {
+                    if (!Main.askForUsersPermission("Are you sure you want to delete " + number + "? (Y-yes, N-no\t")) {
+                        return false;
+                    }
+                }
                 array[i] = array[counter - 1];
                 counter--;
                 if (!deleteAllOccurrences) {
@@ -382,7 +422,7 @@ public class Editor {
     ---------------------------------------------------------------------------------------
      */
     // total 30 lines of code, => 8 lines of comments, => 22 lines of code
-    private boolean deleteFromSortedArray(int number, boolean deleteAll) {
+    private boolean deleteFromSortedArray(int number, boolean deleteAll, boolean internalCall) {
         int totalNumbersBeforeDeletion = counter;
         int firstOccurrenceIndex = -1, lastOccurrenceIndex = -1; //initialized with the invalid index numbers
         for (int i = 0; i <= totalNumbersBeforeDeletion; i++) { //Loop for identifying the indexes where the given number occurs in the array
@@ -408,6 +448,11 @@ public class Editor {
         The following code block will shift all the remaining elements from the right side of the array to the index,
         from where the number is being deleted
          */
+        if (!internalCall) {
+            if (!Main.askForUsersPermission("Are you sure you want to delete " + number + "? (Y- yes, N- no):\t")) {
+                return false;
+            }//end if
+        }//end if
         moveElementsToTheLeft(firstOccurrenceIndex, lastOccurrenceIndex);
         return true;
     }
