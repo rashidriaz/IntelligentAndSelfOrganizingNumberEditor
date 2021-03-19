@@ -6,30 +6,57 @@ public class Main {
     private static final Editor editor = new Editor();
     private static final Scanner input = new Scanner(System.in);
 
+    /*
+    ---------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------
+    --------------------------------------MAIN METHOD--------------------------------------------
+    ---------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------
+     */
     public static void main(String[] args) {
         boolean exit;
         System.out.println("\"Welcome to self intelligent and self organizing number editor.\"");
         do {
             char option = getChoice();
             exit = performTask(option);
-        } while (!exit);
+        } while (!exit);//end do-while loop
         System.out.println("Program ended Successfully");
     }
 
+    /*
+    ----------------------------------------------------------------------------------------------
+    The function of this method is to perform the task based on the provided choice chosen by the
+    user
+    ----------------------------------------------------------------------------------------------
+     */
     private static boolean performTask(char option) {
         switch (option) {
-            case '1' -> insertANumber();
-            case '2' -> deleteANumber();
-            case '3' -> viewNumbers();
-            case '4' -> findNumber();
-            case '5' -> sort();
-            default -> {
-                return true;
-            }
+            case '1':
+                insertANumber();
+                return false;
+            case '2':
+                deleteANumber();
+                return false;
+            case '3':
+                viewNumbers();
+                return false;
+            case '4':
+                findNumber();
+                return false;
+            case '5':
+                sort();
+                return false;
         }
-        return false;
+        return true;
     }
 
+    /*
+    ----------------------------------------------------------------------------------------------
+    The function of this method is to print a menu and ask user what type of sorting they want, and
+    based on the choice of the user, the method calls another method from the editor class which will
+    perform the sorting.
+    ------------------------------------------------------------------------------------------------
+     */
     private static void sort() {
         System.out.println("Would you like to sort the numbers in:");
         System.out.println("1. Ascending Order");
@@ -42,10 +69,17 @@ public class Main {
         } else if (option == '2') {
             editor.sort(false);
             return;
-        }
+        }//end if else
         System.out.println("Invalid option selected. Please try again");
     }
 
+    /*
+    --------------------------------------------------------------------------------------------
+    This method takes a number as an input from the user passes it to the method in editor class
+    which then traverses the array to find the position of that number in the array. This function
+    prints the position of the given number on the console as the result.
+    ---------------------------------------------------------------------------------------------
+     */
     private static void findNumber() {
         System.out.print("\nEnter a number you want to search:\t");
         int number = input.nextInt();
@@ -58,6 +92,12 @@ public class Main {
         }
     }
 
+    /*
+    ----------------------------------------------------------------------------------------------
+    The functionality of this method is to perform the insertion based on the choice of the user
+    whether the user wants to make simple insertion or user wants to insert the number at the
+    specific position
+     */
     private static void insertANumber() {
         if (editor.isFull()) {
             System.out.println("Storage is full cannot add more numbers");
@@ -94,7 +134,12 @@ public class Main {
         System.out.print("\nEnter a number:\t");
         int number = input.nextInt();
         input.nextLine();
-        editor.delete(number, false);
+        if (editor.delete(number, false)) {
+            System.out.println("Number Deleted Successfully, Remaining numbers are: ");
+            editor.printNumbers();
+        } else {
+            System.out.println("Number deletion failed, Something went wrong. Please try again. Maybe " + number + " is not located in the list");
+        }// end if else
     }
 
     private static void deleteAllOccurrences() {
@@ -111,7 +156,12 @@ public class Main {
         System.out.print("Enter ending point: \t");
         int end = input.nextInt();
         input.nextLine();
-        editor.deleteInARange(start, end);
+        if (editor.deleteInARange(start, end)) {
+            System.out.println("Number Deleted Successfully, Remaining numbers are: ");
+            editor.printNumbers();
+        } else {
+            System.out.println("Number deletion failed, Something went wrong. Please try again.");
+        }//end if else
     }
 
     private static void deleteANumber() {
@@ -124,16 +174,15 @@ public class Main {
             case '1' -> deleteOneOccurrence();
             case '2' -> deleteAllOccurrences();
             case '3' -> deleteInARange();
+            case '4' -> editor.reset();
         }
     }
 
     private static char getChoice() {
         char option = printMainMenuAndGetSelectedOption();
-        if (((editor.isEmpty() || editor.getCounter() <= 3) && option != '1') ||
-                (option == '1' && editor.isFull())) {
-            if (!editor.isEmpty() && option == '3') {
-                return option;
-            }
+        if ((editor.isEmpty() && option != '1') || (option == '1' && editor.isFull())) {
+            option = '.';
+        } else if (option == '5' && (editor.getCounter() <= 3 || editor.isSorted())) {
             option = '.';
         }
         return option;
@@ -188,6 +237,7 @@ public class Main {
         System.out.println("1. Delete a number");
         System.out.println("2. Delete from everywhere");
         System.out.println("3. Delete in a selected range");
+        System.out.println("4. Delete all numbers");
         System.out.println("Press any other key to go back");
         System.out.print("\n Enter your choice:\t");
         return input.next().charAt(0);
@@ -200,5 +250,20 @@ public class Main {
         System.out.println("Press any other key to go back");
         System.out.print("\n Enter your choice:\t");
         return input.next().charAt(0);
+    }
+
+
+    public static boolean askForUsersPermission(String message) {
+        while (true) {
+            System.out.print("\n" + message + ":\t");
+            char decision = input.next().toLowerCase().charAt(0);
+            if (decision == 'y') {
+                return true;
+            } else if (decision == 'n') {
+                return false;
+            } else {
+                System.out.println("\nError!! Wrong option chosen. Please try again\n");
+            }
+        }
     }
 }

@@ -48,18 +48,18 @@ public class IOStream {
 //                "  " + expression.secondNumber + "\t=\t" + result + "\n\n");
 //    }
 
-    public static boolean askForUsersPermission(String message) {
-        while (true) {
-            System.out.print("\n" + message + ":\t");
-            char decision = input.next().toLowerCase().charAt(0);
-            if (decision == 'y') {
-                return true;
-            } else if (decision == 'n') {
-                return false;
-            } else {
-                System.out.println("\nError!! Wrong option chosen. Please try again\n");
-            }
-        }
-    }
+//    public static boolean askForUsersPermission(String message) {
+//        while (true) {
+//            System.out.print("\n" + message + ":\t");
+//            char decision = input.next().toLowerCase().charAt(0);
+//            if (decision == 'y') {
+//                return true;
+//            } else if (decision == 'n') {
+//                return false;
+//            } else {
+//                System.out.println("\nError!! Wrong option chosen. Please try again\n");
+//            }
+//        }
+//    }
 }
 
