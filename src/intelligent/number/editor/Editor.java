@@ -97,23 +97,27 @@ public class Editor {
         if (index < 0) {//number not found
             return false;
         }
-        if (index >= 0) {
+        if (index > 0) {
             if (!Main.askForUsersPermission("Are you sure you want to replace " + oldNumber + " with " + newNumber + "? (Y-yes, N-no):\t")) {
                 return false;
             }
         }
         if (isSorted()) {
-            if (Main.askForUsersPermission("Replacing the number might affect the order. Would you still like to proceed? (Y-yes, N-no):\t")) {
+            if (!Main.askForUsersPermission("Replacing the number might affect the order. Would you still like to proceed? (Y-yes, N-no):\t")) {
                 int oldCounter = counter;
                 delete(oldNumber, replaceAll, true);
                 while (counter != oldCounter) {
+                    if (counter < 1) {
+                        insert(newNumber);
+                    }
                     insertAtSuitablePosition(newNumber);
                 }
                 return true;
             }
+            setArrayAsUnsorted();
         }
-        while (index >= 0) {
-            array[index] = newNumber;
+        while (index > 0) {
+            array[index - 1] = newNumber;
             index = findNumber(oldNumber);
         }
         return true;
@@ -168,8 +172,23 @@ public class Editor {
     ---------------------------------------------------------------------------------------
      */
     public int findNumber(int number) {
-        int start = getStartingIndex(number), end = getEndingIndex(number);
-        for (int i = start; i < end; i++) {
+        int end = counter;
+        for (int i = 0; i < end; i++) {
+            if (isSorted()) {
+                if (isInAscendingOrder) {
+                    if (array[counter / 2] > number) {
+                        end = counter / 2;
+                    } else {
+                        i = counter / 2;
+                    }
+                } else {
+                    if (array[counter / 2] < number) {
+                        end = counter / 2;
+                    } else {
+                        i = counter / 2;
+                    }
+                }
+            }
             if (array[i] == number) {
                 return (i + 1);
             }//end if
@@ -294,6 +313,7 @@ public class Editor {
                 insertAtSuitablePosition(number);
                 return;
             }//end if
+            setArrayAsUnsorted();
         }//endIf
         array[counter++] = number;
         isInAscendingOrder = false;
@@ -315,6 +335,7 @@ public class Editor {
                 "the order.\n" +
                 " Would you still like to proceed and disturb the order? (y-yes, N- No)");
         if (disturbTheOrder) {
+            setArrayAsUnsorted();
             insertInUnSortedArrayAtPosition(number, position);
             return true;
         }
@@ -453,6 +474,10 @@ public class Editor {
                 return false;
             }//end if
         }//end if
+        if (lastOccurrenceIndex == counter - 1) {
+            counter = firstOccurrenceIndex;
+            return true;
+        }//end if
         moveElementsToTheLeft(firstOccurrenceIndex, lastOccurrenceIndex);
         return true;
     }
@@ -493,38 +518,12 @@ public class Editor {
     }
 
     /*
-    ---------------------------------------------------------------------------------------
-    This method return the index of array from which the array should be traversed to find the
-    -desired number
-    ---------------------------------------------------------------------------------------
-    */
-    private int getStartingIndex(int number) {
-        int start = 0;
-        if (isSorted()) {
-            if (array[counter / 2] < number && isInAscendingOrder) {
-                start = counter / 2;
-            } else if (array[counter / 2] > number && isInDescendingOrder) {
-                start = counter / 2;
-            }// end if/else
-        }//end if
-        return start;
-    }
-
-    /*
-    ---------------------------------------------------------------------------------------
-    This method return the index of array upto which the array should be traversed to find
-    -the desired number
-    ---------------------------------------------------------------------------------------
+    -------------------------------------------------------------------------------------
+    This method will set the array as unsorted if the user will choose to do so
+    -------------------------------------------------------------------------------------
      */
-    private int getEndingIndex(int number) {
-        int end = counter;
-        if (isSorted()) {
-            if (array[counter / 2] < number && isInDescendingOrder) {
-                end = counter / 2;
-            } else if (array[counter / 2] < number && isInAscendingOrder) {
-                end = counter / 2;
-            }//end if / else
-        }//end if
-        return end;
+    private void setArrayAsUnsorted() {
+        isInAscendingOrder = false;
+        isInDescendingOrder = false;
     }
 }
